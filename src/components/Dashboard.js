@@ -290,6 +290,9 @@ function Dashboard() {
                 Vehicle No
               </th>
               <th className="border px-3 py-2 text-left text-sm md:text-base whitespace-nowrap">
+                Received
+              </th>
+              <th className="border px-3 py-2 text-left text-sm md:text-base whitespace-nowrap">
                 Description
               </th>
 
