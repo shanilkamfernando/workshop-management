@@ -30,7 +30,8 @@ function Login() {
       setTimeout(() => setMessage(null), 3000);
 
       // navigate to dashboard after short delay
-      setTimeout(() => navigate("/dashboard"), 1000);
+      // setTimeout(() => navigate("/dashboard"), 1000);
+      setTimeout(() => navigate("/partners"), 1000);
     } catch (err) {
       setMessage(err.response?.data?.error || "Login Failed");
       setError(true);
