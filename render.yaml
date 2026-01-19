@@ -23,7 +23,6 @@ services:
   - type: web
     name: workshop-frontend
     env: static
-    region: singapore
     plan: free
     buildCommand: cd client && npm install && npm run build
     staticPublishPath: client/build
@@ -36,5 +35,4 @@ databases:
   - name: workshop-db
     databaseName: workshop
     user: workshop_user
-    region: singapore
     plan: free
