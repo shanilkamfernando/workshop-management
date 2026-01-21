@@ -32,7 +32,7 @@ function Dashboard() {
           `http://localhost:3001/projects/info/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         setProjectInfo(projectRes.data);
 
@@ -41,7 +41,7 @@ function Dashboard() {
           `http://localhost:3001/entries/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         setEntries(entriesRes.data);
 
@@ -90,13 +90,6 @@ function Dashboard() {
     }
   };
 
-  const handleApprove = (id) => {
-    setEntries(
-      entries.map((e) => (e.id === id ? { ...e, approved: true } : e))
-    );
-    alert("Entry approved successfully!");
-  };
-
   // Add new entry (User only) - now with project id
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -106,7 +99,7 @@ function Dashboard() {
         { ...form, project_id: projectId },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       alert("Entry Added!");
       window.location.reload();
@@ -121,14 +114,14 @@ function Dashboard() {
       const res = await axios.put(
         `http://localhost:3001/entries/${id}/${url}`,
         data,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      const updated = res.data.entry ? res.data.entry : res.data;
-      setEntries((prev) =>
-        prev.map((entry) =>
-          entry.id === id ? { ...entry, ...res.data } : entry
-        )
-      );
+      // const updated = res.data.entry ? res.data.entry : res.data;
+      // setEntries((prev) =>
+      //   prev.map((entry) =>
+      //     entry.id === id ? { ...entry, ...res.data } : entry,
+      //   ),
+      // );
 
       if (
         url === "orderform" ||
@@ -207,7 +200,7 @@ function Dashboard() {
       const res = await axios.put(
         `http://localhost:3001/entries/${id}/admin`,
         adminEditForm,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       const updated = res.data.entry ? res.data.entry : res.data;

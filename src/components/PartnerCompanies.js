@@ -57,7 +57,7 @@ function PartnerCompanies() {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-            }
+            },
           );
           console.log("Fallback successful:", fallbackRes.data);
 
@@ -75,7 +75,7 @@ function PartnerCompanies() {
 
   useEffect(() => {
     fetchPartners();
-  }, []);
+  }, [fetchPartners]);
 
   // Refresh partners every 5 seconds for admin (to update notification dots)
   useEffect(() => {
@@ -155,7 +155,7 @@ function PartnerCompanies() {
   // Delete partner - admin only
   const deletePartner = async (partnerId, partnerName) => {
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${partnerName}"? This action cannot be undone.`
+      `Are you sure you want to delete "${partnerName}"? This action cannot be undone.`,
     );
 
     if (!confirmed) return;
@@ -182,7 +182,7 @@ function PartnerCompanies() {
     return (
       partner.image_url ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        partner.name
+        partner.name,
       )}&size=200&background=4F46E5&color=fff&bold=true`
     );
   };
@@ -469,7 +469,7 @@ function PartnerCompanies() {
                     <div className="absolute top-4 left-1 flex items-center gap-2 z-10">
                       <div
                         className={`w-4 h-4 rounded-full ${getNotificationColor(
-                          p.notificationColor
+                          p.notificationColor,
                         )} animate-pulse shadow-lg`}
                         title={getNotificationLabel(p.notificationColor)}
                       ></div>

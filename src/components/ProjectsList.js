@@ -52,13 +52,13 @@ function ProjectsList() {
             `http://localhost:3001/projects/${partnerId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
-            }
+            },
           );
           setProjects(fallbackRes.data || []);
           setError(null);
         } catch (fallbackErr) {
           setError(
-            fallbackErr.response?.data?.error || "Failed to fetch projects"
+            fallbackErr.response?.data?.error || "Failed to fetch projects",
           );
         }
       } else {
@@ -73,7 +73,7 @@ function ProjectsList() {
     if (partnerId) {
       fetchProjects();
     }
-  }, [partnerId]);
+  }, [partnerId, fetchProjects]);
 
   // Refresh projects every 5 seconds for admin (to update notification dots)
   // useEffect(() => {
@@ -109,7 +109,7 @@ function ProjectsList() {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
 
       setProjects([...projects, res.data]);
@@ -124,7 +124,7 @@ function ProjectsList() {
   // Delete project - admin only
   const deleteProject = async (projectId, projectName) => {
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${projectName}"? This action cannot be undone.`
+      `Are you sure you want to delete "${projectName}"? This action cannot be undone.`,
     );
 
     if (!confirmed) return;
@@ -141,27 +141,27 @@ function ProjectsList() {
     }
   };
 
-  const getNotificationColor = (color) => {
-    const colorMap = {
-      red: "bg-red-500",
-      yellow: "bg-yellow-500",
-      green: "bg-green-500",
-      orange: "bg-orange-500",
-      gray: "bg-gray-500",
-    };
-    return colorMap[color] || "";
-  };
+  // const getNotificationColor = (color) => {
+  //   const colorMap = {
+  //     red: "bg-red-500",
+  //     yellow: "bg-yellow-500",
+  //     green: "bg-green-500",
+  //     orange: "bg-orange-500",
+  //     gray: "bg-gray-500",
+  //   };
+  //   return colorMap[color] || "";
+  // };
 
-  const getNotificationLabel = (color) => {
-    const labelMap = {
-      red: "New Entries",
-      yellow: "Pending Approval", //only admin see this
-      green: "Approved - PO Pending",
-      orange: "Invoice Pending",
-      gray: "Driver Details Pending",
-    };
-    return labelMap[color] || "";
-  };
+  // const getNotificationLabel = (color) => {
+  //   const labelMap = {
+  //     red: "New Entries",
+  //     yellow: "Pending Approval", //only admin see this
+  //     green: "Approved - PO Pending",
+  //     orange: "Invoice Pending",
+  //     gray: "Driver Details Pending",
+  //   };
+  //   return labelMap[color] || "";
+  // };
 
   if (loading) {
     return (
