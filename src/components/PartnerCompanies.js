@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -18,7 +18,7 @@ function PartnerCompanies() {
   const username = localStorage.getItem("username");
 
   // Load partners from backend
-  const fetchPartners = async () => {
+  const fetchPartners = useCallback(async () => {
     try {
       let endpoint = "http://localhost:3001/partners";
 
@@ -71,7 +71,7 @@ function PartnerCompanies() {
         setPartners([]);
       }
     }
-  };
+  }, [role, token]);
 
   useEffect(() => {
     fetchPartners();
@@ -92,7 +92,7 @@ function PartnerCompanies() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [role]);
+  }, [role, fetchPartners]);
 
   // Handle image selection
   const handleImageChange = (e) => {

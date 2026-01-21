@@ -111,11 +111,9 @@ function Dashboard() {
   // Update entry (office or admin)
   const handleUpdate = async (id, { url, data }) => {
     try {
-      const res = await axios.put(
-        `http://localhost:3001/entries/${id}/${url}`,
-        data,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      await axios.put(`http://localhost:3001/entries/${id}/${url}`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       // const updated = res.data.entry ? res.data.entry : res.data;
       // setEntries((prev) =>
       //   prev.map((entry) =>

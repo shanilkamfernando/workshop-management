@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import logo from "../images/logo.png";
@@ -15,7 +15,7 @@ function ProjectsList() {
   const role = localStorage.getItem("role");
   const username = localStorage.getItem("username");
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -67,7 +67,7 @@ function ProjectsList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [partnerId, role, token]);
 
   useEffect(() => {
     if (partnerId) {
