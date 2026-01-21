@@ -16,7 +16,7 @@ function App() {
     <Router>
       <Routes>
         {/* Default route - redirect to login */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* Auth routes */}
         <Route path="/signup" element={<Signup />} />

@@ -20,18 +20,79 @@ function PartnerCompanies() {
   // Load partners from backend
   const fetchPartners = async () => {
     try {
-      const res = await axios.get("http://localhost:3001/partners", {
+      let endpoint = "http://localhost:3001/partners";
+
+      // Admin sees partners with notification status
+      if (role === "admin" || role === "office_admin") {
+        endpoint = "http://localhost:3001/partners/status/all";
+      } else if (role === "office" || role === "stores") {
+        endpoint = "http://localhost:3001/partners/status/office";
+      }
+
+      console.log("Fetching partners from:", endpoint);
+
+      const res = await axios.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Partners fetched:", res.data);
+
       setPartners(res.data);
     } catch (err) {
       console.error("Error fetching partners:", err);
+
+      // Fallback to regular endpoint if status endpoint fails
+
+      if (
+        role === "admin" ||
+        role === "office" ||
+        role === "office_admin" ||
+        role === "stores"
+      ) {
+        try {
+          console.log("Trying fallback endpoint...");
+
+          const fallbackRes = await axios.get(
+            "http://localhost:3001/partners",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log("Fallback successful:", fallbackRes.data);
+
+          setPartners(fallbackRes.data || []);
+        } catch (fallbackErr) {
+          console.error("Fallback also failed:", fallbackErr);
+
+          setPartners([]);
+        }
+      } else {
+        setPartners([]);
+      }
     }
   };
 
   useEffect(() => {
     fetchPartners();
   }, []);
+
+  // Refresh partners every 5 seconds for admin (to update notification dots)
+  useEffect(() => {
+    if (
+      role !== "admin" &&
+      role !== "office" &&
+      role !== "office_admin" &&
+      role !== "stores"
+    )
+      return;
+
+    const interval = setInterval(() => {
+      fetchPartners();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [role]);
 
   // Handle image selection
   const handleImageChange = (e) => {
@@ -126,6 +187,28 @@ function PartnerCompanies() {
     );
   };
 
+  const getNotificationColor = (color) => {
+    const colorMap = {
+      red: "bg-red-500",
+      yellow: "bg-yellow-500",
+      green: "bg-green-500",
+      orange: "bg-orange-500",
+      gray: "bg-gray-500",
+    };
+    return colorMap[color] || "";
+  };
+
+  const getNotificationLabel = (color) => {
+    const labelMap = {
+      red: "New Entries",
+      yellow: "Pending Approval",
+      green: "Approved - PO Pending",
+      orange: "Invoice Pending",
+      gray: "Driver Details Pending",
+    };
+    return labelMap[color] || "";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
@@ -143,24 +226,43 @@ function PartnerCompanies() {
                 Welcome, <strong>{username}</strong>
               </span>
             </div>
-            <button
-              onClick={logout}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <div className="flex gap-5">
+              {/* Create User Button - Admin Only */}
+              {role === "admin" && (
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                  </svg>
+                  <span>Create User</span>
+                </button>
+              )}
+              <button
+                onClick={logout}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <span>Logout</span>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -356,8 +458,27 @@ function PartnerCompanies() {
             {partners.map((p) => (
               <div
                 key={p.id}
-                className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200"
+                className="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200"
               >
+                {/* Admin Only: Notification Dot */}
+                {(role === "admin" ||
+                  role === "office" ||
+                  role === "office_admin" ||
+                  role === "stores") &&
+                  p.notificationColor && (
+                    <div className="absolute top-4 left-1 flex items-center gap-2 z-10">
+                      <div
+                        className={`w-4 h-4 rounded-full ${getNotificationColor(
+                          p.notificationColor
+                        )} animate-pulse shadow-lg`}
+                        title={getNotificationLabel(p.notificationColor)}
+                      ></div>
+                      <span className="text-xs font-semibold text-gray-700 bg-white px-2 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                        {p.totalPending} pending
+                      </span>
+                    </div>
+                  )}
+
                 <div className="relative">
                   {/* Partner Image */}
                   <div className="h-48 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
@@ -419,6 +540,46 @@ function PartnerCompanies() {
                     </svg>
                     <span>View Projects</span>
                   </div>
+
+                  {/* Admin Only: Detailed Breakdown */}
+                  {(role === "admin" ||
+                    role === "office" ||
+                    role === "office_admin" ||
+                    role === "stores") &&
+                    p.totalPending > 0 && (
+                      <div className="mt-4 pt-4 border-t border-gray-200 space-y-1">
+                        <p className="text-xs font-semibold text-gray-700">
+                          Pending Items:
+                        </p>
+                        {p.counts.newEntries > 0 && (
+                          <p className="text-xs text-red-600">
+                            • {p.counts.newEntries} new entries
+                          </p>
+                        )}
+                        {(role === "admin" || role === "office_admin") &&
+                          p.counts.pendingApproval > 0 && (
+                            <p className="text-xs text-yellow-600">
+                              • {p.counts.pendingApproval} awaiting approval
+                            </p>
+                          )}
+                        {p.counts.approvedPendingPo > 0 && (
+                          <p className="text-xs text-green-600">
+                            • {p.counts.approvedPendingPo} waiting for PO
+                          </p>
+                        )}
+                        {p.counts.pendingInvoice > 0 && (
+                          <p className="text-xs text-orange-600">
+                            • {p.counts.pendingInvoice} waiting for invoice
+                          </p>
+                        )}
+                        {p.counts.pendingDriver > 0 && (
+                          <p className="text-xs text-gray-600">
+                            • {p.counts.pendingDriver} waiting for driver
+                            details
+                          </p>
+                        )}
+                      </div>
+                    )}
                 </button>
               </div>
             ))}

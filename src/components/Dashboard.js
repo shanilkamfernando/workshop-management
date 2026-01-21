@@ -6,6 +6,7 @@ import logo from "../images/logo.png";
 function Dashboard() {
   const { projectId } = useParams();
   const role = localStorage.getItem("role")?.toLowerCase();
+  console.log("current role:", role);
   const username = localStorage.getItem("username");
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -129,15 +130,27 @@ function Dashboard() {
         )
       );
 
-      if (url === "orderform" || url === "po" || url === "invoice") {
+      if (
+        url === "orderform" ||
+        url === "po" ||
+        url === "invoice" ||
+        url === "driver" ||
+        url === "stores-driver"
+      ) {
         setEntryInputs((prev) => ({
           ...prev,
           [id]: {
             ...prev[id],
             order_form_no: "",
             notes: "",
-            [url === "po" ? "po_no" : url === "invoice" ? "invoice_no" : ""]:
-              "",
+            po_no: "",
+            invoice_no: "",
+            drivers_name: "",
+            vehicle_no: "",
+            received: "",
+            driver_description: "",
+            // [url === "po" ? "po_no" : url === "invoice" ? "invoice_no" : ""]:
+            //   "",
             // [url === "orderform"
             //   ? "order_form_no"
             //   : url === "po"
@@ -162,6 +175,7 @@ function Dashboard() {
       product: entry.product || "",
       quantity: entry.quantity || "",
       description: entry.description || "",
+      due_date: entry.due_date ? entry.due_date.split("T")[0] : "",
       user_datetime: entry.user_datetime
         ? new Date(entry.user_datetime).toISOString()
         : null,
@@ -281,6 +295,8 @@ function Dashboard() {
                 </svg>
                 <span>Back to Projects</span>
               </button>
+
+              {/* logout button */}
               <button
                 onClick={logout}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
@@ -496,10 +512,10 @@ function Dashboard() {
                     ID
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-blue-50">
-                    User
+                    Requested By
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-blue-50">
-                    Item
+                    Item Name
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-blue-50">
                     Quantity
@@ -511,11 +527,10 @@ function Dashboard() {
                     Due Date
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-blue-50">
-                    Description
+                    Notes
                   </th>
-
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-pink-50">
-                    Office User
+                    Assigned Officer
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-pink-50">
                     Order Form No
@@ -527,11 +542,11 @@ function Dashboard() {
                     Office Date & Time
                   </th>
 
-                  <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-yellow-50">
+                  {/* <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-yellow-50">
                     Approve Status
-                  </th>
+                  </th> */}
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-yellow-50">
-                    Updated Status
+                    Current Status
                   </th>
 
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-green-50">
@@ -566,10 +581,10 @@ function Dashboard() {
                     Stores
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-purple-50">
-                    Description
+                    Notes
                   </th>
 
-                  {(role === "office" || role === "admin") && (
+                  {role === "admin" && (
                     <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider">
                       Actions
                     </th>
@@ -650,9 +665,30 @@ function Dashboard() {
                       </td>
 
                       <td className="px-4 py-3 whitespace-nowrap text-md text-gray-700 border-r border-gray-200 bg-blue-50">
-                        {entry.due_date
+                        {editingId === entry.id && role === "admin" ? (
+                          <input
+                            type="date"
+                            value={
+                              adminEditForm.due_date
+                                ? adminEditForm.due_date.split("T")[0]
+                                : ""
+                            }
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-md"
+                            onChange={(e) =>
+                              setAdminEditForm((prev) => ({
+                                ...prev,
+                                due_date: e.target.value,
+                              }))
+                            }
+                          />
+                        ) : entry.due_date ? (
+                          new Date(entry.due_date).toLocaleDateString("en-GB")
+                        ) : (
+                          "-"
+                        )}
+                        {/* {entry.due_date
                           ? new Date(entry.due_date).toLocaleDateString("en-GB")
-                          : "-"}
+                          : "-"} */}
                       </td>
 
                       <td className="px-4 py-3 text-md text-gray-700 border-r border-gray-200 bg-blue-50 min-w-[200px]">
@@ -696,7 +732,7 @@ function Dashboard() {
                           entry.order_form_no
                         ) : (
                           // Office user edit
-                          role === "office" && (
+                          (role === "office" || role === "office_admin") && (
                             <div className="flex gap-2">
                               <input
                                 type="text"
@@ -745,7 +781,7 @@ function Dashboard() {
                             {entry.notes}
                           </div>
                         ) : (
-                          role === "office" &&
+                          (role === "office" || role === "office_admin") &&
                           !entry.order_form_no && (
                             <div className="flex gap-2">
                               <textarea
@@ -767,23 +803,24 @@ function Dashboard() {
                             </div>
                           )
                         )}
-                        {role === "office" && !entry.order_form_no && (
-                          <button
-                            onClick={() =>
-                              handleUpdate(entry.id, {
-                                url: "orderform",
-                                data: {
-                                  order_form_no:
-                                    entryInputs[entry.id]?.order_form_no,
-                                  notes: entryInputs[entry.id]?.notes,
-                                },
-                              })
-                            }
-                            className="bg-green-400 hover:bg-green-500 text-white px-2 py-1 rounded-md mt-1 w-full"
-                          >
-                            Save
-                          </button>
-                        )}
+                        {(role === "office" || role === "office_admin") &&
+                          !entry.order_form_no && (
+                            <button
+                              onClick={() =>
+                                handleUpdate(entry.id, {
+                                  url: "orderform",
+                                  data: {
+                                    order_form_no:
+                                      entryInputs[entry.id]?.order_form_no,
+                                    notes: entryInputs[entry.id]?.notes,
+                                  },
+                                })
+                              }
+                              className="bg-green-400 hover:bg-green-500 text-white px-2 py-1 rounded-md mt-1 w-full"
+                            >
+                              Save
+                            </button>
+                          )}
                       </td>
 
                       <td className="px-4 py-3 whitespace-nowrap text-md text-gray-700 border-r border-gray-200 bg-pink-50">
@@ -793,41 +830,6 @@ function Dashboard() {
                       </td>
 
                       {/* Approval */}
-                      <td className="px-4 py-3 whitespace-nowrap text-md border-r border-gray-200 bg-yellow-50">
-                        {entry.approved ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-md font-semibold bg-green-100 text-green-800">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3 w-3 mr-1"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            Yes
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-md font-semibold bg-red-100 text-red-800">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3 w-3 mr-1"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            No
-                          </span>
-                        )}
-                      </td>
 
                       <td className="px-4 py-3 whitespace-nowrap text-md border-r border-gray-200 bg-yellow-50">
                         {entry.approved ? (
@@ -838,7 +840,7 @@ function Dashboard() {
                             Approved
                           </button>
                         ) : (
-                          role === "admin" && (
+                          (role === "admin" || role === "office_admin") && (
                             <button
                               onClick={() =>
                                 handleUpdate(entry.id, {
@@ -876,7 +878,7 @@ function Dashboard() {
                           entry.po_no
                         ) : (
                           // Office user edit
-                          role === "office" &&
+                          (role === "office" || role === "office_admin") &&
                           entry.approved && (
                             <div>
                               <input
@@ -939,7 +941,7 @@ function Dashboard() {
                           entry.invoice_no
                         ) : (
                           // Office user edit
-                          role === "office" &&
+                          (role === "office" || role === "office_admin") &&
                           entry.po_no && (
                             <div>
                               <input
@@ -1001,7 +1003,9 @@ function Dashboard() {
                           entry.purchase_date.split("T")[0]
                         ) : (
                           // Office user edit — show date input when no date yet
-                          role === "office" && (
+                          (((role === "office" || role === "office_admin") &&
+                            entry.invoice_no) ||
+                            (role === "stores" && entry.invoice_no)) && (
                             <div>
                               <input
                                 type="date"
@@ -1019,20 +1023,6 @@ function Dashboard() {
                                   }))
                                 }
                               />
-                              {/* <button
-                                onClick={() =>
-                                  handleUpdate(entry.id, {
-                                    url: "driver",
-                                    data: {
-                                      purchase_date:
-                                        entryInputs[entry.id]?.purchase_date,
-                                    },
-                                  })
-                                }
-                                className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded mt-1"
-                              >
-                                Save
-                              </button> */}
                             </div>
                           )
                         )}
@@ -1054,8 +1044,9 @@ function Dashboard() {
                         ) : entry.drivers_name ? (
                           entry.drivers_name
                         ) : (
-                          role === "office" &&
-                          entry.invoice_no && (
+                          (((role === "office" || role === "office_admin") &&
+                            entry.invoice_no) ||
+                            (role === "stores" && entry.invoice_no)) && (
                             <input
                               type="text"
                               placeholder="Driver Name"
@@ -1091,8 +1082,9 @@ function Dashboard() {
                         ) : entry.vehicle_no ? (
                           entry.vehicle_no
                         ) : (
-                          role === "office" &&
-                          entry.invoice_no && (
+                          (((role === "office" || role === "office_admin") &&
+                            entry.invoice_no) ||
+                            (role === "stores" && entry.invoice_no)) && (
                             <input
                               type="text"
                               placeholder="Vehicle No"
@@ -1128,8 +1120,9 @@ function Dashboard() {
                         ) : entry.received ? (
                           entry.received
                         ) : (
-                          role === "office" &&
-                          entry.invoice_no && (
+                          (((role === "office" || role === "office_admin") &&
+                            entry.invoice_no) ||
+                            (role === "stores" && entry.invoice_no)) && (
                             <input
                               type="text"
                               placeholder="Stores"
@@ -1167,8 +1160,9 @@ function Dashboard() {
                             {entry.driver_description}
                           </div>
                         ) : (
-                          role === "office" &&
-                          entry.invoice_no && (
+                          (((role === "office" || role === "office_admin") &&
+                            entry.invoice_no) ||
+                            (role === "stores" && entry.invoice_no)) && (
                             <div>
                               <textarea
                                 placeholder="Description"
@@ -1191,7 +1185,11 @@ function Dashboard() {
                               <button
                                 onClick={() =>
                                   handleUpdate(entry.id, {
-                                    url: "driver",
+                                    url:
+                                      role === "office" ||
+                                      role === "office_admin"
+                                        ? "driver"
+                                        : "stores-driver",
                                     data: {
                                       purchase_date:
                                         entryInputs[entry.id]?.purchase_date,
@@ -1199,6 +1197,7 @@ function Dashboard() {
                                         entryInputs[entry.id]?.drivers_name,
                                       vehicle_no:
                                         entryInputs[entry.id]?.vehicle_no,
+                                      received: entryInputs[entry.id]?.received,
                                       driver_description:
                                         entryInputs[entry.id]
                                           ?.driver_description,
