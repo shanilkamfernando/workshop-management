@@ -25,7 +25,7 @@ app.use(
         ? process.env.FRONTEND_URL || "https://workshop-frontend.onrender.com"
         : "http://localhost:3000",
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
@@ -56,7 +56,7 @@ const upload = multer({
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/;
     const extname = allowedTypes.test(
-      path.extname(file.originalname).toLowerCase()
+      path.extname(file.originalname).toLowerCase(),
     );
     const mimetype = allowedTypes.test(file.mimetype);
 
@@ -93,7 +93,7 @@ app.post("/signup", authenticateToken, async (req, res) => {
     // Check if user exists
     const existingUser = await pool.query(
       "SELECT * FROM users WHERE username=$1",
-      [username]
+      [username],
     );
     if (existingUser.rows.length > 0) {
       return res.status(400).json({ error: "User already exists" });
@@ -106,7 +106,7 @@ app.post("/signup", authenticateToken, async (req, res) => {
     await pool.query(
       `INSERT INTO users (username, email, password_hash, role)
          VALUES ($1, $2, $3, $4)`,
-      [username, null, hashedPassword, role]
+      [username, null, hashedPassword, role],
     );
 
     res.json({ message: "Signup successful" });
@@ -124,7 +124,7 @@ app.post("/login", async (req, res) => {
     // Find user
     const userResult = await pool.query(
       "SELECT * FROM users WHERE username=$1 OR email=$1",
-      [username]
+      [username],
     );
     if (userResult.rows.length === 0) {
       return res.status(400).json({ error: "Invalid credentials" });
@@ -146,7 +146,7 @@ app.post("/login", async (req, res) => {
         role: user.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     res.json({
@@ -168,7 +168,7 @@ app.get("/partners/status/all", authenticateToken, async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, name FROM partners ORDER BY id"
+      "SELECT id, name FROM partners ORDER BY id",
     );
 
     // For each partner, count pending entries across all projects
@@ -184,7 +184,7 @@ app.get("/partners/status/all", authenticateToken, async (req, res) => {
           FROM data_entries de
           JOIN projects p ON de.project_id = p.id
           WHERE p.partner_id = $1`,
-          [partner.id]
+          [partner.id],
         );
 
         const counts = countResult.rows[0];
@@ -221,7 +221,7 @@ app.get("/partners/status/all", authenticateToken, async (req, res) => {
             pendingDriver: parseInt(counts.pending_driver),
           },
         };
-      })
+      }),
     );
 
     res.json(partnersWithStatus);
@@ -245,7 +245,7 @@ app.get("/partners/status/office", authenticateToken, async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, name FROM partners ORDER BY id"
+      "SELECT id, name FROM partners ORDER BY id",
     );
 
     // For each partner, count pending entries that office needs to handle
@@ -260,7 +260,7 @@ app.get("/partners/status/office", authenticateToken, async (req, res) => {
           FROM data_entries de
           JOIN projects p ON de.project_id = p.id
           WHERE p.partner_id = $1`,
-          [partner.id]
+          [partner.id],
         );
 
         const counts = countResult.rows[0];
@@ -294,7 +294,7 @@ app.get("/partners/status/office", authenticateToken, async (req, res) => {
             pendingDriver: parseInt(counts.pending_driver),
           },
         };
-      })
+      }),
     );
 
     res.json(partnersWithStatus);
@@ -311,7 +311,7 @@ app.get("/projects/:partnerId/status", authenticateToken, async (req, res) => {
   try {
     const projectsResult = await pool.query(
       "SELECT id, name, partner_id FROM projects WHERE partner_id = $1 ORDER BY id",
-      [partnerId]
+      [partnerId],
     );
 
     const projectsWithStatus = await Promise.all(
@@ -325,7 +325,7 @@ app.get("/projects/:partnerId/status", authenticateToken, async (req, res) => {
             COUNT(*) FILTER (WHERE invoice_no IS NOT NULL AND driver_description IS NULL) as pending_driver
           FROM data_entries 
           WHERE project_id = $1`,
-          [project.id]
+          [project.id],
         );
 
         const counts = entriesResult.rows[0];
@@ -362,7 +362,7 @@ app.get("/projects/:partnerId/status", authenticateToken, async (req, res) => {
             pendingDriver: parseInt(counts.pending_driver),
           },
         };
-      })
+      }),
     );
 
     res.json(projectsWithStatus);
@@ -392,7 +392,7 @@ app.get(
     try {
       const projectsResult = await pool.query(
         "SELECT id, name, partner_id FROM projects WHERE partner_id = $1 ORDER BY id",
-        [partnerId]
+        [partnerId],
       );
 
       const projectsWithStatus = await Promise.all(
@@ -405,7 +405,7 @@ app.get(
             COUNT(*) FILTER (WHERE invoice_no IS NOT NULL AND driver_description IS NULL) as pending_driver
           FROM data_entries 
           WHERE project_id = $1`,
-            [project.id]
+            [project.id],
           );
 
           const counts = entriesResult.rows[0];
@@ -439,7 +439,7 @@ app.get(
               pendingDriver: parseInt(counts.pending_driver),
             },
           };
-        })
+        }),
       );
 
       res.json(projectsWithStatus);
@@ -447,14 +447,14 @@ app.get(
       console.error("Error fetching project status for office:", err);
       res.status(500).json({ error: "Server error" });
     }
-  }
+  },
 );
 
 //get all the partners
 app.get("/partners", authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, name FROM partners ORDER BY id"
+      "SELECT id, name FROM partners ORDER BY id",
     );
     res.json(result.rows);
   } catch (err) {
@@ -474,7 +474,7 @@ app.delete("/partners/:id", authenticateToken, async (req, res) => {
   try {
     const projectCheck = await pool.query(
       "SELECT COUNT(*) as count FROM projects WHERE partner_id = $1",
-      [id]
+      [id],
     );
 
     if (parseInt(projectCheck.rows[0].count) > 0) {
@@ -487,7 +487,7 @@ app.delete("/partners/:id", authenticateToken, async (req, res) => {
     //delete the partner
     const result = await pool.query(
       "DELETE FROM partners WHERE id = $1 RETURNING id, name",
-      [id]
+      [id],
     );
 
     if (result.rows.length === 0) {
@@ -529,7 +529,7 @@ app.post(
 
       const result = await pool.query(
         "INSERT INTO partners (name, image_url) VALUES ($1, $2) RETURNING id, name, image_url",
-        [name.trim(), imageUrl]
+        [name.trim(), imageUrl],
       );
 
       console.log("Partner Created", result.rows[0]);
@@ -540,7 +540,7 @@ app.post(
         .status(500)
         .json({ error: "Error creating partner", details: err.message });
     }
-  }
+  },
 );
 
 app.get("/projects/:partnerId", authenticateToken, async (req, res) => {
@@ -553,7 +553,7 @@ app.get("/projects/:partnerId", authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT id, name, partner_id FROM projects WHERE partner_id = $1 ORDER BY id",
-      [partnerId]
+      [partnerId],
     );
 
     console.log("Projects found:", result.rows.length);
@@ -583,7 +583,7 @@ app.get("/projects/info/:projectId", authenticateToken, async (req, res) => {
        FROM projects p
        JOIN partners pa ON p.partner_id = pa.id
        WHERE p.id = $1`,
-      [projectId]
+      [projectId],
     );
 
     if (result.rows.length === 0) {
@@ -614,7 +614,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
     // ensure partner exists
     const partnerCheck = await pool.query(
       "SELECT id FROM partners WHERE id = $1",
-      [partnerId]
+      [partnerId],
     );
     if (partnerCheck.rows.length === 0) {
       return res.status(404).json({ error: "Partner not found" });
@@ -622,7 +622,7 @@ app.post("/projects", authenticateToken, async (req, res) => {
 
     const result = await pool.query(
       "INSERT INTO projects (name, partner_id) VALUES ($1, $2) RETURNING id, name, partner_id",
-      [name.trim(), partnerId]
+      [name.trim(), partnerId],
     );
 
     res.json(result.rows[0]);
@@ -648,7 +648,7 @@ app.delete("/projects/:id", authenticateToken, async (req, res) => {
     // Check if project has entries
     const entryCheck = await pool.query(
       "SELECT COUNT(*) as count FROM data_entries WHERE project_id = $1",
-      [id]
+      [id],
     );
 
     if (parseInt(entryCheck.rows[0].count) > 0) {
@@ -661,7 +661,7 @@ app.delete("/projects/:id", authenticateToken, async (req, res) => {
     // Delete the project
     const result = await pool.query(
       "DELETE FROM projects WHERE id = $1 RETURNING id, name, partner_id",
-      [id]
+      [id],
     );
 
     if (result.rows.length === 0) {
@@ -705,7 +705,7 @@ app.post("/entries", authenticateToken, async (req, res) => {
         due_date,
         description,
         project_id,
-      ]
+      ],
     );
     res.json({ message: "Entry created successfully" });
   } catch (err) {
@@ -731,12 +731,12 @@ app.get("/entries/:projectId", authenticateToken, async (req, res) => {
     ) {
       result = await pool.query(
         "SELECT * FROM data_entries WHERE project_id=$1 ORDER BY id DESC",
-        [projectId]
+        [projectId],
       );
     } else if (req.user.role === "user") {
       result = await pool.query(
         "SELECT * FROM data_entries WHERE project_id=$1 AND user_id=$2 ORDER BY id DESC",
-        [projectId, req.user.id]
+        [projectId, req.user.id],
       );
     }
     console.log("Entries found:", result.rows.length);
@@ -767,7 +767,7 @@ app.put("/entries/:id/orderform", authenticateToken, async (req, res) => {
       `UPDATE data_entries
             SET order_form_no = $1, notes = $2, office_user_1 = $3, office_datetime_1 = NOW()
             WHERE id = $4 RETURNING *`,
-      [order_form_no, notes || null, req.user.username, entryId]
+      [order_form_no, notes || null, req.user.username, entryId],
     );
 
     if (result.rowCount === 0) {
@@ -798,7 +798,7 @@ app.put("/entries/:id/approve", authenticateToken, async (req, res) => {
       `UPDATE data_entries 
        SET approved = true
        WHERE id = $1 RETURNING *`,
-      [entryId]
+      [entryId],
     );
 
     console.log("Entry approved successfully:", result.rows[0]);
@@ -822,7 +822,7 @@ app.put("/entries/:id/po", authenticateToken, async (req, res) => {
       `UPDATE data_entries
             SET po_no = $1, office_user_2 = $2, office_datetime_2 = NOW()
             WHERE id = $3 AND approved = true RETURNING *`,
-      [po_no, req.user.username, entryId]
+      [po_no, req.user.username, entryId],
     );
 
     if (result.rowCount === 0) {
@@ -877,13 +877,13 @@ app.put("/entries/:id/invoice", authenticateToken, async (req, res) => {
       `UPDATE data_entries
             SET invoice_no = $1, office_user_3 = $2, office_datetime_3 = NOW()
             WHERE id = $3`,
-      [invoice_no, req.user.username, entryId]
+      [invoice_no, req.user.username, entryId],
     );
 
     // Get the complete updated entry
     const result = await pool.query(
       "SELECT * FROM data_entries WHERE id = $1",
-      [entryId]
+      [entryId],
     );
 
     res.json(result.rows[0]);
@@ -920,13 +920,13 @@ app.put("/entries/:id/driver", authenticateToken, async (req, res) => {
         received || null,
         driver_description || null,
         entryId,
-      ]
+      ],
     );
 
     // Get the complete updated entry
     const result = await pool.query(
       "SELECT * FROM data_entries WHERE id = $1",
-      [entryId]
+      [entryId],
     );
 
     res.json(result.rows[0]);
@@ -954,7 +954,7 @@ app.put("/entries/:id/stores-driver", authenticateToken, async (req, res) => {
     //check if invoice_no exsists
     const checkResult = await pool.query(
       "SELECT invoice_no FROM data_entries WHERE id = $1",
-      [entryId]
+      [entryId],
     );
 
     if (checkResult.rows.length === 0) {
@@ -977,12 +977,12 @@ app.put("/entries/:id/stores-driver", authenticateToken, async (req, res) => {
         received || null,
         driver_description || null,
         entryId,
-      ]
+      ],
     );
 
     const result = await pool.query(
       "SELECT * FROM data_entries WHERE id = $1",
-      [entryId]
+      [entryId],
     );
 
     res.json(result.rows[0]);
@@ -1039,7 +1039,7 @@ app.put("/entries/:id/admin", authenticateToken, async (req, res) => {
         delivery_date ? new Date(delivery_date) : null,
         office_locked,
         entryId,
-      ]
+      ],
     );
 
     if (result.rowCount === 0)
@@ -1067,7 +1067,7 @@ app.get("/entries", authenticateToken, async (req, res) => {
     } else if (req.user.role === "user") {
       result = await pool.query(
         "SELECT * FROM data_entries WHERE user_id=$1 ORDER BY id DESC",
-        [req.user.id]
+        [req.user.id],
       );
       // } else if (req.user.role === "office") {
       //   result = await pool.query("SELECT * FROM data_entries ORDER BY id DESC");
@@ -1090,8 +1090,99 @@ console.log(
   "CORS origin:",
   process.env.NODE_ENV === "production"
     ? process.env.FRONTEND_URL || "https://workshop-frontend.onrender.com"
-    : "http://localhost:3000"
+    : "http://localhost:3000",
 );
+
+// Database setup endpoint (run once to create tables)
+app.get("/setup-database", async (req, res) => {
+  try {
+    // Create users table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(255),
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) NOT NULL DEFAULT 'user',
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Create partners table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS partners (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        image_url VARCHAR(500),
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Create projects table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS projects (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        partner_id INTEGER REFERENCES partners(id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Create data_entries table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS data_entries (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        user_name VARCHAR(255),
+        product VARCHAR(255),
+        quantity VARCHAR(100),
+        description TEXT,
+        user_datetime TIMESTAMP,
+        due_date DATE,
+        project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+        order_form_no VARCHAR(255),
+        notes TEXT,
+        office_user_1 VARCHAR(255),
+        office_datetime_1 TIMESTAMP,
+        approved BOOLEAN DEFAULT FALSE,
+        po_no VARCHAR(255),
+        office_user_2 VARCHAR(255),
+        office_datetime_2 TIMESTAMP,
+        invoice_no VARCHAR(255),
+        office_user_3 VARCHAR(255),
+        office_datetime_3 TIMESTAMP,
+        purchase_date DATE,
+        drivers_name VARCHAR(255),
+        vehicle_no VARCHAR(100),
+        received VARCHAR(255),
+        driver_description TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Create admin user (password: admin123)
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    await pool.query(
+      `
+      INSERT INTO users (username, email, password_hash, role)
+      VALUES ('admin', NULL, $1, 'admin')
+      ON CONFLICT (username) DO NOTHING
+    `,
+      [hashedPassword],
+    );
+
+    res.json({
+      message: "✅ Database setup completed successfully!",
+      tables: ["users", "partners", "projects", "data_entries"],
+      adminUser: "Created with username: admin, password: admin123",
+    });
+  } catch (err) {
+    console.error("Database setup error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
