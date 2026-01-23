@@ -18,12 +18,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 //------------------------------middleware---------------------------------------------------
+// app.use(
+//   cors({
+//     origin:
+//       process.env.NODE_ENV === "production"
+//         ? process.env.FRONTEND_URL || "https://workshop-frontend.onrender.com"
+//         : "http://localhost:3000",
+//     credentials: true,
+//   }),
+// );
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? process.env.FRONTEND_URL || "https://workshop-frontend.onrender.com"
-        : "http://localhost:3000",
+    origin: "https://workshop-frontend-production-53f1.up.railway.app",
     credentials: true,
   }),
 );
