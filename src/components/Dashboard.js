@@ -833,7 +833,9 @@ function Dashboard() {
                             disabled
                             className="px-3 py-1 bg-gray-300 text-gray-600 rounded-lg text-md font-semibold"
                           >
-                            Approved
+                            {entry.approved_by
+                              ? `Approved by ${entry.approved_by}`
+                              : "Approved"}
                           </button>
                         ) : (
                           (role === "admin" || role === "office_admin") && (
