@@ -729,23 +729,30 @@ app.get("/entries/:projectId", authenticateToken, async (req, res) => {
   console.log("User:", req.user.username, "Role:", req.user.role);
 
   try {
-    let result;
-    if (
-      req.user.role === "admin" ||
-      req.user.role === "office" ||
-      req.user.role === "office_admin" ||
-      req.user.role === "stores"
-    ) {
-      result = await pool.query(
-        "SELECT * FROM data_entries WHERE project_id=$1 ORDER BY id DESC",
-        [projectId],
-      );
-    } else if (req.user.role === "user") {
-      result = await pool.query(
-        "SELECT * FROM data_entries WHERE project_id=$1 AND user_id=$2 ORDER BY id DESC",
-        [projectId, req.user.id],
-      );
-    }
+    // let result;
+    // if (
+    //   req.user.role === "admin" ||
+    //   req.user.role === "office" ||
+    //   req.user.role === "office_admin" ||
+    //   req.user.role === "stores"
+    // )
+    //  {
+    //   result = await pool.query(
+    //     "SELECT * FROM data_entries WHERE project_id=$1 ORDER BY id DESC",
+    //     [projectId],
+    //   );
+    // } else if (req.user.role === "user") {
+    //   result = await pool.query(
+    //     "SELECT * FROM data_entries WHERE project_id=$1 AND user_id=$2 ORDER BY id DESC",
+    //     [projectId, req.user.id],
+    //   );
+    // }
+
+    const result = await pool.query(
+      "SELECT * FROM data_entries WHERE project_id=$1 ORDER BY id DESC",
+      [projectId],
+    );
+
     console.log("Entries found:", result.rows.length);
     res.json(result.rows);
   } catch (err) {
