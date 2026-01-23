@@ -20,13 +20,13 @@ function PartnerCompanies() {
   // Load partners from backend
   const fetchPartners = useCallback(async () => {
     try {
-      let endpoint = "http://localhost:3001/partners";
+      let endpoint = `${process.env.REACT_APP_API_URL}/partner`;
 
       // Admin sees partners with notification status
       if (role === "admin" || role === "office_admin") {
-        endpoint = "http://localhost:3001/partners/status/all";
+        endpoint = `${process.env.REACT_APP_API_URL}/partners/status/all`;
       } else if (role === "office" || role === "stores") {
-        endpoint = "http://localhost:3001/partners/status/office";
+        endpoint = `${process.env.REACT_APP_API_URL}/partners/status/office`;
       }
 
       console.log("Fetching partners from:", endpoint);
@@ -52,7 +52,7 @@ function PartnerCompanies() {
           console.log("Trying fallback endpoint...");
 
           const fallbackRes = await axios.get(
-            "http://localhost:3001/partners",
+            `${process.env.REACT_APP_API_URL}/partners`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -136,12 +136,16 @@ function PartnerCompanies() {
         formData.append("image", newPartner.image);
       }
 
-      const res = await axios.post("http://localhost:3001/partners", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/partners`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
       setPartners([...partners, res.data]);
       setNewPartner({ name: "", image: null, imagePreview: null });
@@ -161,9 +165,12 @@ function PartnerCompanies() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:3001/partners/${partnerId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/partners/${partnerId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       setPartners(partners.filter((p) => p.id !== partnerId));
       alert("Partner deleted successfully!");

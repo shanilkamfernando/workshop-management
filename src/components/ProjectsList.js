@@ -20,13 +20,13 @@ function ProjectsList() {
       setLoading(true);
       setError(null);
 
-      let endpoint = `http://localhost:3001/projects/${partnerId}`;
+      let endpoint = `${process.env.REACT_APP_API_URL}/projects/${partnerId}`;
 
       //admin sees projects with status/notifications
       if (role === "admin" || role === "office_admin") {
-        endpoint = `http://localhost:3001/projects/${partnerId}/status`;
+        endpoint = `${process.env.REACT_APP_API_URL}/projects/${partnerId}/status`;
       } else if (role === "office" || role === "stores") {
-        endpoint = `http://localhost:3001/projects/${partnerId}/status/office`;
+        endpoint = `${process.env.REACT_APP_API_URL}/projects/${partnerId}/status/office`;
       }
 
       console.log("Fetching projects for partner:", partnerId);
@@ -49,7 +49,7 @@ function ProjectsList() {
       ) {
         try {
           const fallbackRes = await axios.get(
-            `http://localhost:3001/projects/${partnerId}`,
+            `${process.env.REACT_APP_API_URL}/projects/${partnerId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             },
@@ -102,7 +102,7 @@ function ProjectsList() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/projects",
+        `${process.env.REACT_APP_API_URL}/projects`,
         {
           name: newProject,
           partnerId: parseInt(partnerId),
@@ -130,9 +130,12 @@ function ProjectsList() {
     if (!confirmed) return;
 
     try {
-      await axios.delete(`http://localhost:3001/projects/${projectId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/projects/${projectId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       setProjects(projects.filter((p) => p.id !== projectId));
       alert("Project deleted successfully!");

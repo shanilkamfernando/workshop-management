@@ -29,7 +29,7 @@ function Dashboard() {
       try {
         //fetch project info
         const projectRes = await axios.get(
-          `http://localhost:3001/projects/info/${projectId}`,
+          `${process.env.REACT_APP_API_URL}/projects/info/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -38,7 +38,7 @@ function Dashboard() {
 
         //fetch entries for this project
         const entriesRes = await axios.get(
-          `http://localhost:3001/entries/${projectId}`,
+          `${process.env.REACT_APP_API_URL}/entries/${projectId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -95,7 +95,7 @@ function Dashboard() {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:3001/entries",
+        `${process.env.REACT_APP_API_URL}/entries`,
         { ...form, project_id: projectId },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -111,9 +111,13 @@ function Dashboard() {
   // Update entry (office or admin)
   const handleUpdate = async (id, { url, data }) => {
     try {
-      await axios.put(`http://localhost:3001/entries/${id}/${url}`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/entries/${id}/${url}`,
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       // const updated = res.data.entry ? res.data.entry : res.data;
       // setEntries((prev) =>
       //   prev.map((entry) =>
@@ -196,7 +200,7 @@ function Dashboard() {
   const saveAdminEdit = async (id) => {
     try {
       const res = await axios.put(
-        `http://localhost:3001/entries/${id}/admin`,
+        `${process.env.REACT_APP_API_URL}/entries/${id}/admin`,
         adminEditForm,
         { headers: { Authorization: `Bearer ${token}` } },
       );
