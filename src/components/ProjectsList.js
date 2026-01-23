@@ -206,15 +206,25 @@ function ProjectsList() {
               Welcome, <strong>{username}</strong>
             </span>
           </div>
-          <button
-            onClick={() => {
-              localStorage.clear();
-              navigate("/login");
-            }}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition"
-          >
-            <span>Logout</span>
-          </button>
+
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => navigate("/partners")}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition"
+            >
+              <span>Back</span>
+            </button>
+
+            <button
+              onClick={() => {
+                localStorage.clear();
+                navigate("/login");
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition"
+            >
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </div>
 
