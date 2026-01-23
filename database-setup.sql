@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS data_entries (
     
     -- Approval
     approved BOOLEAN DEFAULT FALSE,
+       approved_by VARCHAR(255), 
     
     -- PO fields
     po_no VARCHAR(255),
@@ -70,6 +71,8 @@ CREATE TABLE IF NOT EXISTS data_entries (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE data_entries ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255);
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_projects_partner_id ON projects(partner_id);

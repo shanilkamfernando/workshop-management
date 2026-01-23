@@ -806,13 +806,13 @@ app.put("/entries/:id/approve", authenticateToken, async (req, res) => {
   try {
     const entryId = parseInt(req.params.id);
 
-    console.log("Approving entry:", entryId);
+    console.log("Approving entry:", entryId, "by", req.user.username);
 
     const result = await pool.query(
       `UPDATE data_entries 
-       SET approved = true
+       SET approved = true, approved_by $1
        WHERE id = $1 RETURNING *`,
-      [entryId],
+      [req.user.username, entryId],
     );
 
     console.log("Entry approved successfully:", result.rows[0]);
