@@ -175,7 +175,7 @@ app.get("/partners/status/all", authenticateToken, async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, name FROM partners ORDER BY id",
+      "SELECT id, name, image_url FROM partners ORDER BY id",
     );
 
     // For each partner, count pending entries across all projects
@@ -252,7 +252,7 @@ app.get("/partners/status/office", authenticateToken, async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, name FROM partners ORDER BY id",
+      "SELECT id, name, image_url FROM partners ORDER BY id",
     );
 
     // For each partner, count pending entries that office needs to handle
