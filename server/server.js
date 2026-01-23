@@ -810,8 +810,8 @@ app.put("/entries/:id/approve", authenticateToken, async (req, res) => {
 
     const result = await pool.query(
       `UPDATE data_entries 
-       SET approved = true, approved_by $1
-       WHERE id = $1 RETURNING *`,
+       SET approved = true, approved_by = $1
+       WHERE id = $2 RETURNING *`,
       [req.user.username, entryId],
     );
 
