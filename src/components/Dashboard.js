@@ -118,12 +118,11 @@ function Dashboard() {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      // const updated = res.data.entry ? res.data.entry : res.data;
-      // setEntries((prev) =>
-      //   prev.map((entry) =>
-      //     entry.id === id ? { ...entry, ...res.data } : entry,
-      //   ),
-      // );
+
+      // Update the entry in state immediately
+      setEntries((prev) =>
+        prev.map((entry) => (entry.id === entryId ? res.data : entry)),
+      );
 
       if (
         url === "orderform" ||

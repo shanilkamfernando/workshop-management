@@ -115,6 +115,8 @@ function ProjectsList() {
       setProjects([...projects, res.data]);
       setNewProject("");
       alert("Project created successfully!");
+
+      fetchProjects();
     } catch (err) {
       console.error("Error creating project:", err);
       alert(err.response?.data?.error || "Failed to create project");

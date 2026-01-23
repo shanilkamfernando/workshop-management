@@ -151,6 +151,8 @@ function PartnerCompanies() {
       setNewPartner({ name: "", image: null, imagePreview: null });
       setShowAddForm(false);
       alert("Partner created successfully!");
+
+      fetchPartners();
     } catch (err) {
       alert(err.response?.data?.error || "Failed to create partner");
     }
