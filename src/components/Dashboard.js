@@ -121,7 +121,7 @@ function Dashboard() {
 
       // Update the entry in state immediately
       setEntries((prev) =>
-        prev.map((entry) => (entry.id === entryId ? res.data : entry)),
+        prev.map((entry) => (entry.id === id ? res.data : entry)),
       );
 
       if (
