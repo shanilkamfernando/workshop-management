@@ -20,7 +20,7 @@ function PartnerCompanies() {
   // Load partners from backend
   const fetchPartners = useCallback(async () => {
     try {
-      let endpoint = `${process.env.REACT_APP_API_URL}/partner`;
+      let endpoint = `${process.env.REACT_APP_API_URL}/partners`;
 
       // Admin sees partners with notification status
       if (role === "admin" || role === "office_admin") {
