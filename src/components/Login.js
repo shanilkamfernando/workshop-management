@@ -23,6 +23,10 @@ function Login() {
 
       console.log("Login response:", res.data);
 
+      if (!res.data.token || !res.data.user) {
+        throw new Error("Invalid response from server");
+      }
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("id", res.data.user.id);
       localStorage.setItem("role", res.data.user.role);
