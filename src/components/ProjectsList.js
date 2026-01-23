@@ -286,26 +286,31 @@ function ProjectsList() {
             {projects.map((p) => (
               <div
                 key={p.id}
-                className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 overflow-hidden"
+                className="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 overflow-hidden"
               >
-                {/* {(role === "admin" ||
-                  role === "office" ||
-                  role === "office_admin" ||
-                  role === "stores") &&
-                  p.notificationColor && (
-                    <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
-                      <div
-                        className={`w-4 h-4 rounded-full ${getNotificationColor(
-                          p.notificationColor
-                        )} animate-pulse shadow-lg`}
-                        title={getNotificationLabel(p.notificationColor)}
-                      ></div>
-                      <span className="text-xs font-semibold text-gray-700 bg-white px-2 py-1 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-                        {getNotificationLabel(p.notificationColor)}
-                      </span>
-                    </div>
-                  )} */}
-
+                {role === "admin" && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteProject(p.id, p.name);
+                    }}
+                    className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-lg z-10"
+                    title="Delete project"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                )}
                 <button
                   onClick={() => navigate(`/dashboard/${p.id}`)}
                   className="w-full p-6 text-left hover:bg-gray-50 transition-colors duration-200"
@@ -372,7 +377,7 @@ function ProjectsList() {
                     )}
                 </button>
 
-                {role === "admin" && (
+                {/* {role === "admin" && (
                   <div className="absolute bottom-3 right-3">
                     <button
                       onClick={(e) => {
@@ -397,7 +402,7 @@ function ProjectsList() {
                       <span className="text-xs font-semibold">Delete</span>
                     </button>
                   </div>
-                )}
+                )} */}
               </div>
             ))}
           </div>
