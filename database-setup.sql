@@ -72,7 +72,11 @@ CREATE TABLE IF NOT EXISTS data_entries (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-ALTER TABLE data_entries ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255);
+await pool.query(`
+      ALTER TABLE data_entries 
+      ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255)
+    `);
+
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_projects_partner_id ON projects(partner_id);
