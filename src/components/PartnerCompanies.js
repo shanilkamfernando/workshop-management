@@ -228,8 +228,8 @@ function PartnerCompanies() {
                 <span className="text-white font-bold text-xl">C</span>
               </div> */}
               <div className=" rounded-lg flex items-center justify-center">
+                <img src={mainlogo} width={50} height={50} alt="mainlogo" />
                 <img src={logo} alt="Logo" />
-                <img src={mainlogo} alt="mainlogo" />
               </div>
               <span className="text-gray-600 text-4xl">
                 Welcome, <strong>{username}</strong>
