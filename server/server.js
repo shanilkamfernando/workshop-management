@@ -806,6 +806,11 @@ app.put("/entries/:id/approve", authenticateToken, async (req, res) => {
   try {
     const entryId = parseInt(req.params.id);
 
+    console.log("=== APPROVE REQUEST ===");
+    console.log("Entry ID:", entryId);
+    console.log("Approved by:", req.user.username);
+    console.log("User role:", req.user.role);
+
     console.log("Approving entry:", entryId, "by", req.user.username);
 
     const result = await pool.query(
@@ -818,7 +823,11 @@ app.put("/entries/:id/approve", authenticateToken, async (req, res) => {
     console.log("Entry approved successfully:", result.rows[0]);
     res.json(result.rows[0]); // Return complete entry
   } catch (err) {
-    console.error("Approve error:", err);
+    console.error("❌ APPROVE ERROR:");
+    console.error("Error message:", err.message);
+    console.error("Error code:", err.code);
+    console.error("Error detail:", err.detail);
+    console.error("Full error:", err);
     res.status(500).json({ error: "Server error approving entry" });
   }
 });
@@ -1195,6 +1204,65 @@ app.get("/setup-database", async (req, res) => {
   } catch (err) {
     console.error("Database setup error:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Database setup endpoint (run once to create tables)
+app.get("/setup-database", async (req, res) => {
+  try {
+    // ... your existing setup code ...
+
+    res.json({
+      message: "✅ Database setup completed successfully!",
+      tables: ["users", "partners", "projects", "data_entries"],
+      adminUser: "Created with username: admin, password: admin123",
+    });
+  } catch (err) {
+    console.error("Database setup error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 🆕 ADD THIS NEW ENDPOINT RIGHT HERE 👇
+// TEMPORARY: Add approved_by column
+app.get("/add-approved-by", async (req, res) => {
+  try {
+    console.log("Attempting to add approved_by column...");
+
+    // Check if column exists
+    const checkColumn = await pool.query(`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name='data_entries' AND column_name='approved_by'
+    `);
+
+    if (checkColumn.rows.length > 0) {
+      return res.json({
+        message: "Column 'approved_by' already exists!",
+        action: "No changes made",
+      });
+    }
+
+    // Add the column
+    await pool.query(`
+      ALTER TABLE data_entries 
+      ADD COLUMN approved_by VARCHAR(255)
+    `);
+
+    console.log("✅ Column added successfully");
+
+    res.json({
+      message: "✅ Column 'approved_by' added successfully!",
+      action: "Column created",
+      note: "You can now remove this endpoint",
+    });
+  } catch (err) {
+    console.error("Error adding column:", err);
+    res.status(500).json({
+      error: err.message,
+      detail: err.detail,
+      code: err.code,
+    });
   }
 });
 
