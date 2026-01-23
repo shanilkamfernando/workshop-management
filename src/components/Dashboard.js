@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import logo from "../images/logo.png";
+import mainlogo from "../images/mainlogo.jpeg";
 
 function Dashboard() {
   const { projectId } = useParams();
@@ -230,6 +231,7 @@ function Dashboard() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center space-x-5">
               <div className=" rounded-lg flex items-center justify-center">
+                <img src={mainlogo} alt="mainlogo" />
                 <img src={logo} alt="Logo" />
               </div>
               <div className="">

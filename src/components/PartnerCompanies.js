@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
+import mainlogo from "../images/mainlogo.jpeg";
 
 function PartnerCompanies() {
   const [partners, setPartners] = useState([]);
@@ -228,6 +229,7 @@ function PartnerCompanies() {
               </div> */}
               <div className=" rounded-lg flex items-center justify-center">
                 <img src={logo} alt="Logo" />
+                <img src={mainlogo} alt="mainlogo" />
               </div>
               <span className="text-gray-600 text-4xl">
                 Welcome, <strong>{username}</strong>

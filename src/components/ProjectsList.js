@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import logo from "../images/logo.png";
+import mainlogo from "../images/mainlogo.jpeg";
 
 function ProjectsList() {
   const { partnerId } = useParams();
@@ -199,6 +200,7 @@ function ProjectsList() {
             </div> */}
             <div className=" rounded-lg flex items-center justify-center">
               <img src={logo} alt="Logo" />
+              <img src={mainlogo} alt="mainlogo" />
             </div>
             <span className="text-gray-600 text-3xl">
               Welcome, <strong>{username}</strong>
