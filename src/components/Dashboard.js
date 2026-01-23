@@ -230,7 +230,7 @@ function Dashboard() {
         <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center space-x-5">
-              <div className=" rounded-lg flex items-center justify-center">
+              <div className=" rounded-lg flex items-baseline justify-center">
                 <img src={mainlogo} width={50} height={50} alt="mainlogo" />
                 <img src={logo} alt="Logo" />
               </div>

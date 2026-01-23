@@ -198,7 +198,7 @@ function ProjectsList() {
             {/* <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-3xl">C</span>
             </div> */}
-            <div className=" rounded-lg flex items-center justify-center">
+            <div className=" rounded-lg flex items-baseline justify-center">
               <img src={mainlogo} width={50} height={50} alt="mainlogo" />
               <img src={logo} alt="Logo" />
             </div>
