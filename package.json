@@ -7,5 +7,12 @@
   "dependencies": {
     "lucide-react": "^0.553.0",
     "multer": "^2.0.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "serve": "serve -s build -p $PORT",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   }
 }
