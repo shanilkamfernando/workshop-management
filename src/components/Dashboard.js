@@ -111,7 +111,7 @@ function Dashboard() {
   // Update entry (office or admin)
   const handleUpdate = async (id, { url, data }) => {
     try {
-      await axios.put(
+      const res = await axios.put(
         `${process.env.REACT_APP_API_URL}/entries/${id}/${url}`,
         data,
         {
