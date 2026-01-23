@@ -188,6 +188,13 @@ function PartnerCompanies() {
 
   // Default placeholder image
   const getPartnerImage = (partner) => {
+    if (partner.image_url) {
+      if (partner.image_url.startsWith("http")) {
+        return partner.image_url;
+      }
+      return `${process.env.REACT_APP_API_URL}${partner.image_url}`;
+    }
+
     return (
       partner.image_url ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(
