@@ -1324,6 +1324,58 @@ app.get("/add-approved-by", async (req, res) => {
   }
 });
 
+app.get("/add-new-columns", async (req, res) => {
+  try {
+    console.log("Attempting to add approved_at and remarks columns...");
+
+    // Check if columns exist
+    const checkColumns = await pool.query(`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name='data_entries' 
+      AND column_name IN ('approved_at', 'remarks')
+    `);
+
+    const existingColumns = checkColumns.row.map((row) => row.column_name);
+    const columnsAdded = [];
+
+    if (!existingColumns.includes("approved_at")) {
+      await pool.query(
+        `ALTER TABLE data_entries ADD COLUMN approved_at TIMESTAMP`,
+      );
+
+      columnsAdded.push("approved_at");
+      console.log("approved_at column added");
+    }
+
+    // Add remarks if it doesn't exist
+    if (!existingColumns.includes("remarks")) {
+      await pool.query(`
+        ALTER TABLE data_entries 
+        ADD COLUMN remarks TEXT
+      `);
+      columnsAdded.push("remarks");
+      console.log("✅ remarks column added");
+    }
+
+    res.json({
+      message:
+        columnsAdded.length > 0
+          ? `✅ Columns added: ${columnsAdded.join(", ")}`
+          : "All columns already exist!",
+      columnsAdded,
+      existingColumns,
+    });
+  } catch (error) {
+    console.error("Error adding columns:", err);
+    res.status(500).json({
+      error: err.message,
+      detail: err.detail,
+      code: err.code,
+    });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
