@@ -1250,7 +1250,7 @@ function Dashboard() {
                                 </button>
                               </>
                             ) : (
-                              <>
+                              <div className="flex justify-center items-center gap-3">
                                 <button
                                   onClick={() => startAdminEdit(entry)}
                                   className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
@@ -1266,7 +1266,7 @@ function Dashboard() {
                                 >
                                   Delete
                                 </button>
-                              </>
+                              </div>
                             )}
                           </>
                         )}
