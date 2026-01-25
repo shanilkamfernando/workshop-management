@@ -847,10 +847,15 @@ app.put("/entries/:id/approve", authenticateToken, async (req, res) => {
 
     const result = await pool.query(
       `UPDATE data_entries 
-       SET approved = true, approved_by = $1
+       SET approved = true, approved_by = $1, approved_at = NOW()
        WHERE id = $2 RETURNING *`,
       [req.user.username, entryId],
     );
+
+    if (result.rows.length === 0) {
+      console.log("❌ No entry found with ID:", entryId);
+      return res.status(404).json({ error: "Entry not found" });
+    }
 
     console.log("Entry approved successfully:", result.rows[0]);
     res.json(result.rows[0]); // Return complete entry
@@ -860,7 +865,9 @@ app.put("/entries/:id/approve", authenticateToken, async (req, res) => {
     console.error("Error code:", err.code);
     console.error("Error detail:", err.detail);
     console.error("Full error:", err);
-    res.status(500).json({ error: "Server error approving entry" });
+    res
+      .status(500)
+      .json({ error: "Server error approving entry", details: err.message });
   }
 });
 
@@ -1104,6 +1111,34 @@ app.put("/entries/:id/admin", authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Update remarks (admin and office_admin only)
+app.put("/entries/:id/remarks", authenticateToken, async (req, res) => {
+  if (req.user.role !== "admin" && req.user.role !== "office_admin") {
+    return res.status(403).json({ error: "Access Denied" });
+  }
+
+  const { remarks } = req.body;
+  const entryId = parseInt(req.params.id);
+
+  try {
+    const result = await pool.query(
+      `UPDATE data_entries
+       SET remarks = $1
+       WHERE id = $2 RETURNING *`,
+      [remarks || null, entryId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Entry not found" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error updating remarks:", err);
+    res.status(500).json({ error: "Server error updating remarks" });
   }
 });
 
