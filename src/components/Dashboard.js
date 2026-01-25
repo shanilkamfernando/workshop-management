@@ -216,6 +216,31 @@ function Dashboard() {
     }
   };
 
+  const handleDeleteEntry = async (id, produc) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete the entry "${productName}"?\n\nThis action cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/entries/${entryId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      // Remove the entry from state
+      setEntries((prev) => prev.filter((entry) => entry.id !== entryId));
+
+      alert("Entry deleted successfully!");
+    } catch (err) {
+      console.error("Error deleting entry:", err);
+      alert(err.response?.data?.error || "Failed to delete entry");
+    }
+  };
+
   //   const isUserAdded = (entry) => {
   //     if (entry.added_by) return String(entry.added_by).toLowerCase() === "user";
   //     if (entry.user_id && entry.office_user_1 == null) return true;
@@ -1228,12 +1253,23 @@ function Dashboard() {
                                 </button>
                               </>
                             ) : (
-                              <button
-                                onClick={() => startAdminEdit(entry)}
-                                className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
-                              >
-                                Edit
-                              </button>
+                              <>
+                                <button
+                                  onClick={() => startAdminEdit(entry)}
+                                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
+                                >
+                                  Edit
+                                </button>
+
+                                <button
+                                  onClick={() =>
+                                    handleDeleteEntry(entry.id, entry.product)
+                                  }
+                                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors"
+                                >
+                                  Delete
+                                </button>
+                              </>
                             )}
                           </>
                         )}
