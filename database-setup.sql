@@ -76,6 +76,10 @@ await pool.query(`
       ALTER TABLE data_entries 
       ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255)
     `);
+    
+ALTER TABLE data_entries ADD COLUMN IF NOT EXISTS approved_by VARCHAR(255);
+ALTER TABLE data_entries ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP;
+ALTER TABLE data_entries ADD COLUMN IF NOT EXISTS remarks TEXT;
 
 
 -- Create indexes for better performance
