@@ -216,7 +216,7 @@ function Dashboard() {
     }
   };
 
-  const handleDeleteEntry = async (id, produc) => {
+  const handleDeleteEntry = async (entryId, productName) => {
     const confirmed = window.confirm(
       `Are you sure you want to delete the entry "${productName}"?\n\nThis action cannot be undone.`,
     );
