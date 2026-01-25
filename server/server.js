@@ -1324,54 +1324,29 @@ app.get("/add-approved-by", async (req, res) => {
   }
 });
 
+// SIMPLEST VERSION - works on PostgreSQL 9.6+
 app.get("/add-new-columns", async (req, res) => {
   try {
-    console.log("Attempting to add approved_at and remarks columns...");
+    console.log("Adding columns...");
 
-    // Check if columns exist
-    const checkColumns = await pool.query(`
-      SELECT column_name 
-      FROM information_schema.columns 
-      WHERE table_name='data_entries' 
-      AND column_name IN ('approved_at', 'remarks')
+    await pool.query(`
+      ALTER TABLE data_entries 
+      ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP
     `);
 
-    const existingColumns = checkColumns.row.map((row) => row.column_name);
-    const columnsAdded = [];
-
-    if (!existingColumns.includes("approved_at")) {
-      await pool.query(
-        `ALTER TABLE data_entries ADD COLUMN approved_at TIMESTAMP`,
-      );
-
-      columnsAdded.push("approved_at");
-      console.log("approved_at column added");
-    }
-
-    // Add remarks if it doesn't exist
-    if (!existingColumns.includes("remarks")) {
-      await pool.query(`
-        ALTER TABLE data_entries 
-        ADD COLUMN remarks TEXT
-      `);
-      columnsAdded.push("remarks");
-      console.log("✅ remarks column added");
-    }
+    await pool.query(`
+      ALTER TABLE data_entries 
+      ADD COLUMN IF NOT EXISTS remarks TEXT
+    `);
 
     res.json({
-      message:
-        columnsAdded.length > 0
-          ? `✅ Columns added: ${columnsAdded.join(", ")}`
-          : "All columns already exist!",
-      columnsAdded,
-      existingColumns,
+      success: true,
+      message: "✅ Columns added successfully!",
     });
-  } catch (error) {
-    console.error("Error adding columns:", err);
+  } catch (err) {
+    console.error("Error:", err);
     res.status(500).json({
       error: err.message,
-      detail: err.detail,
-      code: err.code,
     });
   }
 });
