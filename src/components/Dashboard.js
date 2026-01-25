@@ -53,6 +53,7 @@ function Dashboard() {
             notes: entry.notes || "",
             po_no: entry.po_no || "",
             invoice_no: entry.invoice_no || "",
+            remarks: entry.remarks || "",
             purchase_date: entry.purchase_date
               ? entry.purchase_date.split("T")[0]
               : "",
@@ -182,6 +183,8 @@ function Dashboard() {
       po_no: entry.po_no || "",
       invoice_no: entry.invoice_no || "",
       approved: entry.approved || false,
+      approved_by: entry.approved_by || "",
+      approved_at: entry.approved_at || null,
       purchase_date: entry.purchase_date
         ? entry.purchase_date.split("T")[0]
         : "",
@@ -566,7 +569,12 @@ function Dashboard() {
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-yellow-50">
                     Current Status
                   </th>
-
+                  <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-yellow-50">
+                    Approved Date & Time
+                  </th>
+                  <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-yellow-50">
+                    Remarks
+                  </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-green-50">
                     Office User
                   </th>
@@ -874,6 +882,74 @@ function Dashboard() {
                             </button>
                           )
                         )}
+                      </td>
+
+                      <td className="px-4 py-3 text-md text-gray-700 border-r border-gray-200 bg-yellow-50 min-w-[250px]">
+                        {editingId === entry.id && role === "admin" ? (
+                          <textarea
+                            value={adminEditForm.remarks || ""}
+                            className="border rounded px-2 py-1 w-full"
+                            rows={2}
+                            placeholder="Add remarks..."
+                            onChange={(e) =>
+                              setAdminEditForm((prev) => ({
+                                ...prev,
+                                remarks: e.target.value,
+                              }))
+                            }
+                          />
+                        ) : entry.remarks ? (
+                          <div
+                            style={{
+                              minWidth: "250px",
+                              whiteSpace: "pre-wrap",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {entry.remarks}
+                          </div>
+                        ) : (
+                          (role === "admin" || role === "office_admin") && (
+                            <div className="flex flex-col gap-2">
+                              <textarea
+                                placeholder="Add remarks..."
+                                value={entryInputs[entry.id]?.remarks || ""}
+                                className="border rounded px-2 py-1 w-full"
+                                style={{ minWidth: "250px" }}
+                                rows={2}
+                                onChange={(e) =>
+                                  setEntryInputs((prev) => ({
+                                    ...prev,
+                                    [entry.id]: {
+                                      ...prev[entry.id],
+                                      remarks: e.target.value,
+                                    },
+                                  }))
+                                }
+                              />
+                              <button
+                                onClick={() =>
+                                  handleUpdate(entry.id, {
+                                    url: "remarks",
+                                    data: {
+                                      remarks: entryInputs[entry.id]?.remarks,
+                                    },
+                                  })
+                                }
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-xs"
+                              >
+                                Save Remarks
+                              </button>
+                            </div>
+                          )
+                        )}
+                      </td>
+
+                      {/* approved data and time */}
+                      <td className="px-4 py-3 whitespace-nowrap text-md text-gray-700 border-r border-gray-200 bg-yellow-50">
+                        {entry.approved_at
+                          ? new Date(entry.approved_at).toLocaleString()
+                          : "-"}
                       </td>
 
                       {/* PO Section*/}
