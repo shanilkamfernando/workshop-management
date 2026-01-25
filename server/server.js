@@ -8,6 +8,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import { error } from "console";
 
 dotenv.config();
 const app = express();
@@ -652,20 +653,16 @@ app.delete("/projects/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Check if project has entries
-    const entryCheck = await pool.query(
-      "SELECT COUNT(*) as count FROM data_entries WHERE project_id = $1",
+    //delete alle entries associated with this project
+    const deleteEntries = await pool.query(
+      "DELETE FROM data_entries WHERE project_id = $1 RETURNING id",
       [id],
     );
 
-    if (parseInt(entryCheck.rows[0].count) > 0) {
-      return res.status(400).json({
-        error:
-          "Cannot delete project with existing entries. Delete entries first or contact system administrator.",
-      });
-    }
+    console.log(
+      `Deleted ${deleteEntries.rows.length} entries from project ${id}`,
+    );
 
-    // Delete the project
     const result = await pool.query(
       "DELETE FROM projects WHERE id = $1 RETURNING id, name, partner_id",
       [id],
@@ -678,12 +675,47 @@ app.delete("/projects/:id", authenticateToken, async (req, res) => {
     res.json({
       message: "Project deleted successfully",
       deleted: result.rows[0],
+      entriesDeleted: deleteEntries.rows.length,
     });
-  } catch (err) {
+  } catch (error) {
     console.error("Error deleting project:", err);
     res.status(500).json({ error: "Error deleting project" });
   }
 });
+
+//   try {
+//     // Check if project has entries
+//     const entryCheck = await pool.query(
+//       "SELECT COUNT(*) as count FROM data_entries WHERE project_id = $1",
+//       [id],
+//     );
+
+//     if (parseInt(entryCheck.rows[0].count) > 0) {
+//       return res.status(400).json({
+//         error:
+//           "Cannot delete project with existing entries. Delete entries first or contact system administrator.",
+//       });
+//     }
+
+//     // Delete the project
+//     const result = await pool.query(
+//       "DELETE FROM projects WHERE id = $1 RETURNING id, name, partner_id",
+//       [id],
+//     );
+
+//     if (result.rows.length === 0) {
+//       return res.status(404).json({ error: "Project not found" });
+//     }
+
+//     res.json({
+//       message: "Project deleted successfully",
+//       deleted: result.rows[0],
+//     });
+//   } catch (err) {
+//     console.error("Error deleting project:", err);
+//     res.status(500).json({ error: "Error deleting project" });
+//   }
+// });
 
 //--------------------------Entries Routes------------------------
 
@@ -1072,6 +1104,32 @@ app.put("/entries/:id/admin", authenticateToken, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
+  }
+});
+
+//delete entry
+app.delete("/entries/:id", authenticateToken, async (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "only admin can delete entries" });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM data_entries WHERE id = $1 RETURNING id, product, user_name",
+      [id],
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Entry not found" });
+    }
+    res.json({
+      message: "Entry deleted successfully",
+      deleted: result.rows[0],
+    });
+  } catch (err) {
+    console.error("Error deleting entry:", err);
+    res.status(500).json({ error: "error deleting entry" });
   }
 });
 
