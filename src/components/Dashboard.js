@@ -216,23 +216,20 @@ function Dashboard() {
     }
   };
 
-  const handleDeleteEntry = async (entryId, productName) => {
+  const handleDeleteEntry = async (id, product) => {
     const confirmed = window.confirm(
-      `Are you sure you want to delete the entry "${productName}"?\n\nThis action cannot be undone.`,
+      `Are you sure you want to delete the entry "${product}"?\n\nThis action cannot be undone.`,
     );
 
     if (!confirmed) return;
 
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_API_URL}/entries/${entryId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      await axios.delete(`${process.env.REACT_APP_API_URL}/entries/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       // Remove the entry from state
-      setEntries((prev) => prev.filter((entry) => entry.id !== entryId));
+      setEntries((prev) => prev.filter((entry) => entry.id !== id));
 
       alert("Entry deleted successfully!");
     } catch (err) {
