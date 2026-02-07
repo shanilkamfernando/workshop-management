@@ -548,7 +548,7 @@ function Dashboard() {
                     Due Date
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-blue-50">
-                    Notes
+                    Remarks
                   </th>
                   <th className="px-4 py-3 text-left text-md text-center font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200 bg-pink-50">
                     Assigned Officer
