@@ -650,7 +650,7 @@ function Dashboard() {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 text-md text-gray-700 border-r border-gray-200 bg-blue-50">
+                      <td className="px-4 py-3 text-md text-gray-700 border-r border-gray-200 bg-blue-50 min-w-[300px]">
                         {editingId === entry.id && role === "admin" ? (
                           <input
                             value={adminEditForm.product || ""}
